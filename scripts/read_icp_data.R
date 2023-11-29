@@ -196,15 +196,23 @@ ggplot()+
 require(readxl)
 alk_doc <- read_xlsx("C:/Users/Camille Minaudo/OneDrive - Universitat de Barcelona/Documentos/data/sau/Sed_water_sampling/DOC_Alk.xlsx",
                      sheet = "RESUMEN DATOS")
+alk_doc$date <- as.Date(alk_doc$`Date of sampling`)
+ggplot(alk_doc, aes(date, `Alcalinity (meq/L)`, colour = as.factor(`Depth (m)`)))+
+  geom_smooth(method = "loess", aes(fill = as.factor(`Depth (m)`)), alpha = 0.2)+
+  geom_point()+theme_article()+
+  scale_colour_viridis_d(option = "A", begin = 0.2, end = 0.8)+
+  scale_fill_viridis_d(option = "A", begin = 0.2, end = 0.8)
+
+
+
 
 alk_doc$uniqID <- paste(as.Date(alk_doc$`Date of sampling`),"-",alk_doc$`Depth (m)`,"m",sep = "")
-icp_avg$uniqID <- paste(as.Date(alk_doc$`Date of sampling`),"-",alk_doc$`Depth (m)`,"m",sep = "")
+icp_avg$uniqID <- paste(as.Date(icp_avg$date),"-",icp_avg$depth,"m",sep = "")
+
+icp_avg$alk <- alk_doc$`Alcalinity (meq/L)`[match(icp_avg$uniqID, alk_doc$uniqID)]
 
 
-plot(alk_doc$`Date of sampling`, alk_doc$`Alcalinity (meq/L)`)
-
-
-
+ggplot(icp_avg, aes(alk, Ca))+geom_point()+theme_article()
 
 
 
